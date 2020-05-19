@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "asas"
+rsync -rav --include '+ */' --include '- *' .project/ $1/
