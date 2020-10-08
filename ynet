@@ -1,0 +1,76 @@
+#!/usr/bin/python
+import sys, os, re, datetime, subprocess
+working_path = os.getcwd()
+
+def get_project_codes():
+	project_codes = []
+	files = os.listdir( working_path )
+	for f in files:
+		code=re.findall("[0-9]{5}_[A-Z]{3}[0-9]{3}",f)
+		if  code != []:
+			project_codes.append(code[0])
+			project_codes.sort()
+	return project_codes
+
+def get_clients_codes():
+	client_codes = []
+	for code in get_project_codes():
+		client_code = code[6:9]
+		if client_code not in client_codes:
+			client_codes.append(client_code)
+		
+	return client_codes
+
+def get_project_structure( my_path ):
+	dirs = list()
+	for (dirpath, dirnames, files) in os.walk(my_path):
+		dirs += [os.path.join(dirpath, d)[len(my_path)+1:] for d in dirnames]
+	return dirs
+
+def new_project():
+	
+	#print( "current clients are : ")
+	
+	codes = ""
+	for code in get_clients_codes():
+			codes += code + ","
+			
+	#client = input("enter client code:")
+	client = str(subprocess.check_output("echo '" + codes + "' | rofi -dmenu -i  -format s -sep ',' -p 'current clients are'", shell=True))
+	client = client[2:5].upper()
+	#client = client[0:3].upper()
+	project_codes = get_project_codes()
+	client_project_n = str( project_codes ).count(client) + 1
+	project_n = int(project_codes[-1][2:5])+1
+	
+	#project = input("enter project name:")
+
+	project = str(subprocess.check_output("rofi -dmenu -i  -format s -p 'enter project name'", shell=True))[2:-3]
+	
+	project = project.replace(" ","_").title()
+		
+	new_folder = datetime.datetime.now().strftime("%y")+str(project_n).zfill(3)+"_"+client+str(client_project_n).zfill(3)+"_"+project
+	struct = get_project_structure("/media/TioTigre/00_libreria/tigre_struct")
+	if not os.path.lexists( new_folder ):
+		os.mkdir( new_folder)
+	for d in struct:
+		if not os.path.lexists( new_folder+os.sep+d ):
+			os.mkdir( new_folder+os.sep+d )
+
+def create_todays_folder():
+	todays_folder=(datetime.datetime.now().strftime("%y%m%d"))
+	if not os.path.lexists( todays_folder ):
+			os.mkdir( todays_folder )
+		
+if sys.argv.count("--newproj") > 0 or sys.argv.count("-n") > 0 :
+	new_project()
+
+if sys.argv.count("--today") > 0 or sys.argv.count("-t") > 0 :
+	create_todays_folder()	
+	
+elif sys.argv.count("--debug") > 0 :
+	subprocess
+	
+else:
+	print("error : no valid arguments given")
+
