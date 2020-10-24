@@ -1,0 +1,11 @@
+test(){
+	local f=$1
+	local result=file "$f"
+	return result
+}
+for i; 
+	do 
+	find "$i" -iname "._*" -exec test "{}" \;;
+	find "$i" -iname ".DS*" -exec test "{}" \;;
+	done
+
