@@ -37,8 +37,8 @@ def new_project():
 			
 	client = input("enter client code:")
 	#client = str(subprocess.check_output("echo '" + codes + "' | rofi -dmenu -i  -format s -sep ',' -p 'current clients are'", shell=True))
-	client = client[2:5].upper()
-	#client = client[0:3].upper()
+	#client = client[2:5].upper()
+	client = client[0:3].upper()
 	project_codes = get_project_codes()
 	client_project_n = str( project_codes ).count(client) + 1
 	project_n = int(project_codes[-1][2:5])+1
